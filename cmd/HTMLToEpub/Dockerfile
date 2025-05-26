@@ -9,5 +9,5 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates pandoc
 WORKDIR /root/
 COPY --from=builder /app/main ./main
-EXPOSE 12332
+EXPOSE 80
 CMD ["./main"]
