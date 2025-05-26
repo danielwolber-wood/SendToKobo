@@ -1,4 +1,4 @@
-package HTMLExtractor
+package main
 
 import (
 	"encoding/json"
