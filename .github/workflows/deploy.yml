@@ -45,11 +45,29 @@ jobs:
       - name: Check if service changed
         id: check-changes
         run: |
-          if [ "${{ needs.changes.outputs[matrix.service] }}" == "true" ] || [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "deploy=true" >> $GITHUB_OUTPUT
-          else
-            echo "deploy=false" >> $GITHUB_OUTPUT
-          fi
+              # Get the specific service change status
+              case "${{ matrix.service }}" in
+                "FileUploader")
+                  CHANGED="${{ needs.changes.outputs.FileUploader }}"
+                  ;;
+                "HTMLExtractor")
+                  CHANGED="${{ needs.changes.outputs.HTMLExtractor }}"
+                  ;;
+                "HTMLToEpub")
+                  CHANGED="${{ needs.changes.outputs.HTMLToEpub }}"
+                  ;;
+                *)
+                  CHANGED="false"
+                  ;;
+              esac
+              
+              if [ "$CHANGED" == "true" ] || [ "${{ github.event_name }}" == "workflow_dispatch" ] || [ "${{ github.ref }}" == "refs/heads/main" ]; then
+                echo "deploy=true" >> $GITHUB_OUTPUT
+                echo "Service ${{ matrix.service }} will be deployed (changed: $CHANGED)"
+              else
+                echo "deploy=false" >> $GITHUB_OUTPUT
+                echo "Service ${{ matrix.service }} will be skipped (changed: $CHANGED)"
+              fi
 
       - name: Setup Google Cloud
         if: steps.check-changes.outputs.deploy == 'true'
