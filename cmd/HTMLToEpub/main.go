@@ -16,7 +16,7 @@ type ConversionRequest struct {
 func main() {
 	r := http.NewServeMux()
 	r.HandleFunc("POST /v1/api/convert", handleConvert)
-	http.ListenAndServe(":80", r)
+	http.ListenAndServe(":8080", r)
 }
 
 func ConvertStringWithPandoc(content, title, fromFormat, toFormat string) ([]byte, error) {

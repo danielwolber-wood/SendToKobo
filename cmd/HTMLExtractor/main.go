@@ -19,7 +19,7 @@ func main() {
 	r.HandleFunc("POST /v1/api/extract", handleExtract)
 	r.HandleFunc("POST /v1/api/minimize", handleMinimize)
 
-	http.ListenAndServe(":80", r)
+	http.ListenAndServe(":8080", r)
 
 }
 
