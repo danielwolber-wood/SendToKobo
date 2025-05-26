@@ -7,7 +7,7 @@ RUN go build -o main .
 RUN chmod +x ./main
 
 FROM alpine:latest
-RUN apk --no-cache add ca-certificates pandoc
+RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 COPY --from=builder /app/main ./main
 EXPOSE 80
