@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/go-shiori/go-readability"
 	"io"
 	"net/http"
@@ -16,6 +17,7 @@ type ExtractResponse struct {
 func main() {
 	r := http.NewServeMux()
 	r.HandleFunc("POST /v1/api/extract", handleExtract)
+	r.HandleFunc("POST /v1/api/minimize", handleMinimize)
 
 	http.ListenAndServe(":80", r)
 
@@ -31,6 +33,20 @@ func Extract(r io.Reader) (ExtractResponse, error) {
 		return ExtractResponse{}, err
 	}
 	return ExtractResponse{Title: article.Title, Content: article.Content}, nil
+}
+
+func GenerateHTML(title, body string) string {
+	return fmt.Sprintf(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>%s</title>
+</head>
+<body>
+    %s
+</body>
+</html>`, title, body)
 }
 
 func handleExtract(w http.ResponseWriter, r *http.Request) {
@@ -53,4 +69,23 @@ func handleExtract(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "encoding error", http.StatusInternalServerError)
 		return
 	}
+}
+
+func handleMinimize(w http.ResponseWriter, r *http.Request) {
+	contentType := r.Header.Get("Content-Type")
+
+	if contentType != "text/html" {
+		http.Error(w, "Content-Type must be text/html", http.StatusUnsupportedMediaType)
+		return
+	}
+	resp, err := Extract(r.Body)
+	if err != nil {
+		http.Error(w, "extraction error", http.StatusInternalServerError)
+		return
+	}
+	defer r.Body.Close()
+	html := GenerateHTML(resp.Title, resp.Content)
+	w.Header().Set("Content-Type", "text/html")
+	w.Write([]byte(html))
+
 }
