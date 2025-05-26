@@ -1,4 +1,3 @@
-
 name: Deploy to Cloud Run
 
 on:
@@ -13,27 +12,7 @@ env:
   REGISTRY: us-central1-docker.pkg.dev
 
 jobs:
-  changes:
-    runs-on: ubuntu-latest
-    outputs:
-      FileUploader: ${{ steps.changes.outputs.FileUploader }}
-      HTMLExtractor: ${{ steps.changes.outputs.HTMLExtractor }}
-      HTMLToEpub: ${{ steps.changes.outputs.HTMLToEpub }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            FileUploader:
-              - 'FileUploader/**'
-            HTMLExtractor:
-              - 'HTMLExtractor/**'
-            HTMLToEpub:
-              - 'HTMLToEpub/**'
-
   build-and-deploy:
-    needs: changes
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -42,47 +21,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Check if service changed
-        id: check-changes
-        run: |
-              # Get the specific service change status
-              case "${{ matrix.service }}" in
-                "FileUploader")
-                  CHANGED="${{ needs.changes.outputs.FileUploader }}"
-                  ;;
-                "HTMLExtractor")
-                  CHANGED="${{ needs.changes.outputs.HTMLExtractor }}"
-                  ;;
-                "HTMLToEpub")
-                  CHANGED="${{ needs.changes.outputs.HTMLToEpub }}"
-                  ;;
-                *)
-                  CHANGED="false"
-                  ;;
-              esac
-              
-              if [ "$CHANGED" == "true" ] || [ "${{ github.event_name }}" == "workflow_dispatch" ] || [ "${{ github.ref }}" == "refs/heads/main" ]; then
-                echo "deploy=true" >> $GITHUB_OUTPUT
-                echo "Service ${{ matrix.service }} will be deployed (changed: $CHANGED)"
-              else
-                echo "deploy=false" >> $GITHUB_OUTPUT
-                echo "Service ${{ matrix.service }} will be skipped (changed: $CHANGED)"
-              fi
-
       - name: Setup Google Cloud
-        if: steps.check-changes.outputs.deploy == 'true'
         uses: google-github-actions/setup-gcloud@v1
         with:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Configure Docker
-        if: steps.check-changes.outputs.deploy == 'true'
         run: |
           gcloud auth configure-docker ${{ env.REGISTRY }}
 
       - name: Build and Push Docker Image
-        if: steps.check-changes.outputs.deploy == 'true'
         run: |
           # Build image
           docker build -t ${{ env.REGISTRY }}/${{ env.GCP_PROJECT_ID }}/my-monorepo/${{ matrix.service }}:${{ github.sha }} ./${{ matrix.service }}/
@@ -97,7 +46,7 @@ jobs:
           docker push ${{ env.REGISTRY }}/${{ env.GCP_PROJECT_ID }}/my-monorepo/${{ matrix.service }}:${{ github.sha }}
 
       - name: Deploy to Cloud Run
-        if: steps.check-changes.outputs.deploy == 'true' && github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main'
         run: |
           gcloud run deploy ${{ matrix.service }} \
             --image=${{ env.REGISTRY }}/${{ env.GCP_PROJECT_ID }}/my-monorepo/${{ matrix.service }}:${{ github.sha }} \
