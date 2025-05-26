@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Dropbox HTML Sender",
+  "version": "1.0",
+  "description": "Send webpage HTML to your API via Dropbox authentication",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "identity"
+  ],
+  "host_permissions": [
+    "https://api.dropboxapi.com/*",
+    "https://www.dropbox.com/*",
+    "https://your-api-domain.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Send HTML to API"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}

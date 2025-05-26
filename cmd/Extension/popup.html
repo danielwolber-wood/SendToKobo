@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 300px;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .primary-btn {
+            background: #0061ff;
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background: #0052e6;
+        }
+
+        .secondary-btn {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .secondary-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .auth-status {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        .auth-status.authenticated {
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h3 style="margin: 0 0 10px 0; text-align: center;">HTML to API</h3>
+
+    <div id="authStatus" class="auth-status">Checking authentication...</div>
+
+    <div id="authSection" style="display: none;">
+        <button id="authenticateBtn" class="secondary-btn">Connect to Dropbox</button>
+    </div>
+
+    <div id="mainSection" style="display: none;">
+        <button id="sendHtmlBtn" class="primary-btn">Send Current Page</button>
+        <button id="reauthBtn" class="secondary-btn">Reconnect Dropbox</button>
+    </div>
+
+    <div id="status" class="status" style="display: none;"></div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
