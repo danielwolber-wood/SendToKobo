@@ -8,10 +8,13 @@ With Mozilla deprecating Pocket, I needed a replacement to sync articles I want 
 
 **Send to Kobo** is hosted on GCP, in a way which maximizes utilization of their free-tier services.
 
+(TODO unimplemented) implement ID management with Firebase Auth
+
 * (TODO unimplemented) **Send to Kobo (Extension)** is a browser extension, allowing one-click web page uploading. Also available for Firefox.
 * (TODO needs to have API endpoint updated but almost done) **Send to Kobo (Script)** is a user script intended for users of Safari, but usable with any script manager (e.g Userscripts on Safari, Tampermonkey on Chrome or Firefox, etc), allowing one-click upload functionality in the restricted Safari permissions ecosystem
+* (TODO unimplemented) **AuthService** is the service responsible for user registration, login, session management, etc (uses Firebase Auth)
 * (TODO unimplemented) **Gateway** is the gateway API service (hosted with GCP API Gateway)
-* (TODO unimplemented) **TokenManager** is the service responsible for managing user sessions, tokens, and login information (hosted on Compute Engine, with data stored in Firestore)
+* (TODO unimplemented) **TokenManager** is the service responsible for serving and refreshing external service tokens (hosted on Compute Engine, with mapping in memory and data stored periodically in Firestore)
 * **HtmlExtractor** uses readability.js to extract just the main content of a webpage (hosted on Cloud Run Functions)
 * **HtmlToEpub** uses go-pandoc to convert the minimized webpage to the eReader native Epub format (hosted on Cloud Run)
 * **FileUploader** uses Dropbox's HTTP API to upload files to the user's Dropbox account and sync them to the user's Kobo eReader

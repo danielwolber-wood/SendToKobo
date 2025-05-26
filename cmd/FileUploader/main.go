@@ -17,7 +17,7 @@ type UploadOptions struct {
 func main() {
 	r := http.NewServeMux()
 	r.HandleFunc("POST /v1/api/upload", handleUpload)
-	http.ListenAndServe(":80", r)
+	http.ListenAndServe(":8080", r)
 }
 
 func handleUpload(w http.ResponseWriter, r *http.Request) {

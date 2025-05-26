@@ -1,0 +1,15 @@
+flowchart TD
+   A[User makes request] --> B[API Gateway receives request]
+   B --> C[API Gateway enriches request with tracing and workflow context]
+   C --> D[Request is sent to HtmlExtractor]
+   D --> E[HtmlExtractor runs extraction process]
+   E --> F[HtmlExtractor sends request to HtmlToEpub]
+   F --> G[HtmlToEpub compiles request into an Epub file]
+   G --> H[HtmlToEpub sends request to FileUploader]
+   H --> I[FileUploader sends User ID from context to IDManager]
+   I --> J[IDManager retrieves user token]
+   J --> K{Is Access Token Expired?}
+   K --> |yes| L[Request new access token from Dropbox]
+   K --> |no| M[Send access token to FileUploader]
+   L --> M
+   M --> N[File Uploader uploads file to Dropbox]

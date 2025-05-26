@@ -1,0 +1,154 @@
+swagger: "2.0"
+info:
+  title: HTML Content API
+  description: API for receiving and processing HTML content with metadata
+  version: "1.0.0"
+  contact:
+    name: API Support
+    email: support@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+host: api.example.com
+basePath: /v1
+schemes:
+  - https
+
+securityDefinitions:
+  BearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: Bearer token authentication. Format - Authorization Bearer <access_token>
+
+security:
+  - BearerAuth: []
+
+consumes:
+  - application/json
+
+produces:
+  - application/json
+
+paths:
+  /upload:
+    post:
+      summary: Submit HTML content with metadata
+      description: Receives HTML content along with URL, title, and timestamp information
+      operationId: submitContent
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: body
+          in: body
+          required: true
+          description: HTML content with associated metadata
+          schema:
+            $ref: "#/definitions/ContentRequest"
+      responses:
+        200:
+          description: Content successfully processed
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        400:
+          description: Bad request - invalid input data
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: Unauthorized - invalid or missing access token
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        422:
+          description: Unprocessable entity - validation errors
+          schema:
+            $ref: "#/definitions/ValidationErrorResponse"
+        500:
+          description: Internal server error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+definitions:
+  ContentRequest:
+    type: object
+    required:
+      - html
+      - url
+      - title
+      - timestamp
+    properties:
+      html:
+        type: string
+        description: Full HTML content of the page
+        example: "<!DOCTYPE html><html><head><title>Example</title></head><body><h1>Hello World</h1></body></html>"
+      url:
+        type: string
+        format: uri
+        description: Source URL of the HTML content
+        example: "https://example.com/page"
+      title:
+        type: string
+        description: Title of the page
+        example: "Page Title"
+      timestamp:
+        type: string
+        format: date-time
+        description: Timestamp when the content was captured (ISO 8601 format)
+        example: "2025-05-26T10:30:00Z"
+
+  SuccessResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        example: true
+      message:
+        type: string
+        example: "Content processed successfully"
+      id:
+        type: string
+        description: Unique identifier for the processed content
+        example: "content_12345"
+      processed_at:
+        type: string
+        format: date-time
+        example: "2025-05-26T10:30:15Z"
+
+  ErrorResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        example: false
+      error:
+        type: string
+        description: Error message
+        example: "Invalid request format"
+      code:
+        type: string
+        description: Error code for programmatic handling
+        example: "INVALID_REQUEST"
+
+  ValidationErrorResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        example: false
+      error:
+        type: string
+        example: "Validation failed"
+      code:
+        type: string
+        example: "VALIDATION_ERROR"
+      details:
+        type: array
+        items:
+          type: object
+          properties:
+            field:
+              type: string
+              example: "url"
+            message:
+              type: string
+              example: "Invalid URL format"
