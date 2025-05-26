@@ -17,7 +17,7 @@ jobs:
     environment: env
     strategy:
       matrix:
-        service: [FileUploader, HTMLExtractor, HTMLToEpub]
+        service: [fileuploader, htmlextractor, HTMLToEpub]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
