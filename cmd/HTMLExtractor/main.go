@@ -19,8 +19,14 @@ func main() {
 	r.HandleFunc("POST /v1/api/extract", handleExtract)
 	r.HandleFunc("POST /v1/api/minimize", handleMinimize)
 
+	r.HandleFunc("/health", handleHealthCheck)
 	http.ListenAndServe(":8080", r)
+}
 
+func handleHealthCheck(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("server is alive"))
 }
 
 func Extract(r io.Reader) (ExtractResponse, error) {
